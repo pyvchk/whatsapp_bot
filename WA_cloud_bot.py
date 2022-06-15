@@ -8,6 +8,7 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.common.keys import Keys
 import smtplib
 from configparser import ConfigParser
@@ -16,12 +17,10 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.utils import formatdate
-from dataclasses import dataclass
-from typing import Any
+from typing import NamedTuple
 
 
-@dataclass(frozen=True)
-class ConfigData:
+class ConfigData(NamedTuple):
     """Config.ini data class"""
     from_addr: str
     password: str
@@ -87,19 +86,6 @@ def cfg_parsing() -> ConfigData:
                                                           )
                                                   ),
                               )
-        # #SERVER = cfg.get("smtp", "server")
-        # #PORT = int(cfg.get("smtp", "port"))
-        # #FROM_ADDR = cfg.get("smtp", "email")
-        # #PASSWORD = cfg.get("smtp", "passwd")
-        # #SUBJECT = cfg.get("smtp", "subject")
-        # #TO_ADDR = cfg.get("smtp", "to_addr")
-        # MAIL_TEXT = "Script's maintainer: https://github.com/pyvchk"
-        # WA_OPENING_TIME = int(cfg.get("wa", "wa_opening_time"))
-        # QR_CODE_WAITING = int(cfg.get("wa", "qr_code_waiting"))
-        # HTML_WAITING_TIME = float(cfg.get("wa", "html_waiting_time"))
-        # #WA_TARGET = cfg.get("wa", "wa_target")
-        # #WA_MESSAGE = cfg.get("wa", "wa_message")
-        # #WA_SENDING_TIME = cfg.get("wa", "sending_time")
     else:
         print("Wrong config!")
         sys.exit()
@@ -157,7 +143,8 @@ def qr_reader(cfg_data: ConfigData,
               driver: webdriver.Chrome):
     """ Shooting QR_CODE and sending on email """
     os.system(f'echo Wait {cfg_data.wa_opening_time} sec for QR_CODE on your email')
-    qr_path = '/app/screenshots/qr_code1.png'
+    #qr_path = '/app/screenshots/qr_code1.png'
+    qr_path = '/home/pyvchk/PycharmProjects/pythonProject/screen/qr_code1.png'
     time.sleep(cfg_data.wa_opening_time)
     driver.save_screenshot(qr_path)
     send_email(cfg_data, qr_path)
@@ -182,12 +169,13 @@ def driver_init(cfg_data: ConfigData) -> WebDriverWait:
     """Opening Google Chrome and WA"""
     options = webdriver.ChromeOptions()
     # Options for docker container' Chrome
-    options.add_argument('--headless')
-    options.add_argument('--no-sandbox')
+    #options.add_argument('--headless')
+    #options.add_argument('--no-sandbox')
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64)"
                          " AppleWebKit/537.36 (KHTML, like Gecko)"
                          " Chrome/102.0.5005.61 Safari/537.36")
-    driver = webdriver.Chrome("/usr/local/bin/chromedriver",
+    #driver = webdriver.Chrome("/usr/local/bin/chromedriver",
+    driver = webdriver.Chrome("/home/pyvchk/Загрузки/chromedriver_linux64/chromedriver",
                               options=options)
     driver.get("https://web.whatsapp.com/")
     wait = WebDriverWait(driver, cfg_data.html_waiting_time)
@@ -197,7 +185,7 @@ def driver_init(cfg_data: ConfigData) -> WebDriverWait:
     return wait
 
 
-def wa_set(cfg_data: ConfigData, wait: WebDriverWait) -> Any:
+def wa_set(cfg_data: ConfigData, wait: WebDriverWait) -> WebElement:
     """Opening WA target chat and finding input box"""
     x_arg = '//span[contains(@title,' + cfg_data.wa_target + ')]'
     try:
