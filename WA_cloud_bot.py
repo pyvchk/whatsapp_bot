@@ -4,7 +4,7 @@ import datetime
 import socket
 import os
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -221,7 +221,12 @@ def working():
         while True:
             if datetime.datetime.now().strftime("%H:%M") == cfg_data.wa_sending_time:
                 os.system('echo Messaging')
-                input_box.send_keys(cfg_data.wa_message + Keys.ENTER)
+                try:
+                    input_box.send_keys(cfg_data.wa_message + Keys.ENTER)
+                except WebDriverException as err3:
+                    os.system(
+                        "echo Log out from WA because of problems with account's attaching")
+                    raise err3
                 os.system('echo See you tomorrow')
                 time.sleep(85800)
             else:
