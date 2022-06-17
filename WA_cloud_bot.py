@@ -104,7 +104,7 @@ def is_connected() -> bool:
         raise OSError
 
 
-def send_email(cfg_data: ConfigData, file_to_attach: str):
+def send_email(cfg_data: ConfigData, file_to_attach: str) -> None:
     """Email sending"""
     msg = MIMEMultipart()
     msg["From"] = cfg_data.from_addr
@@ -140,7 +140,7 @@ def send_email(cfg_data: ConfigData, file_to_attach: str):
 
 
 def qr_reader(cfg_data: ConfigData,
-              driver: webdriver.Chrome):
+              driver: webdriver.Chrome) -> None:
     """ Shooting QR_CODE and sending on email """
     os.system(f'echo Wait {cfg_data.wa_opening_time} sec for QR_CODE on your email')
     #qr_path = '/app/screenshots/qr_code1.png'
