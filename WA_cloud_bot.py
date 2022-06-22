@@ -143,8 +143,7 @@ def qr_reader(cfg_data: ConfigData,
               driver: webdriver.Chrome) -> None:
     """ Shooting QR_CODE and sending on email """
     os.system(f'echo Wait {cfg_data.wa_opening_time} sec for QR_CODE on your email')
-    #qr_path = '/app/screenshots/qr_code1.png'
-    qr_path = '/home/pyvchk/PycharmProjects/pythonProject/screen/qr_code1.png'
+    qr_path = '/app/screenshots/qr_code1.png'
     time.sleep(cfg_data.wa_opening_time)
     driver.save_screenshot(qr_path)
     send_email(cfg_data, qr_path)
@@ -169,13 +168,12 @@ def driver_init(cfg_data: ConfigData) -> WebDriverWait:
     """Opening Google Chrome and WA"""
     options = webdriver.ChromeOptions()
     # Options for docker container' Chrome
-    #options.add_argument('--headless')
-    #options.add_argument('--no-sandbox')
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64)"
                          " AppleWebKit/537.36 (KHTML, like Gecko)"
                          " Chrome/102.0.5005.61 Safari/537.36")
-    #driver = webdriver.Chrome("/usr/local/bin/chromedriver",
-    driver = webdriver.Chrome("/home/pyvchk/Загрузки/chromedriver_linux64/chromedriver",
+    driver = webdriver.Chrome("/usr/local/bin/chromedriver",
                               options=options)
     driver.get("https://web.whatsapp.com/")
     wait = WebDriverWait(driver, cfg_data.html_waiting_time)
@@ -185,7 +183,7 @@ def driver_init(cfg_data: ConfigData) -> WebDriverWait:
     return wait
 
 
-def wa_set(cfg_data: ConfigData, wait: WebDriverWait) -> WebElement:
+def wa_setting(cfg_data: ConfigData, wait: WebDriverWait) -> WebElement:
     """Opening WA target chat and finding input box"""
     x_arg = '//span[contains(@title,' + cfg_data.wa_target + ')]'
     try:
@@ -201,11 +199,11 @@ def wa_set(cfg_data: ConfigData, wait: WebDriverWait) -> WebElement:
     return input_box
 
 
-def working():
+def main():
     cfg_data = cfg_parsing()
     if is_connected():
         wait = driver_init(cfg_data=cfg_data)
-        input_box = wa_set(cfg_data=cfg_data, wait=wait)
+        input_box = wa_setting(cfg_data=cfg_data, wait=wait)
         while True:
             if datetime.datetime.now().strftime("%H:%M") == cfg_data.wa_sending_time:
                 os.system('echo Messaging')
@@ -223,4 +221,4 @@ def working():
 
 
 if __name__ == '__main__':
-    working()
+    main()
