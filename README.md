@@ -1,5 +1,6 @@
 # whatsapp_bot
 Programm for sending everyday massages to the target (group or person).
+*Programm was made because of my laziness and now does't involve further commits*
 
 #
 [config.ini]
